@@ -4,8 +4,14 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100dvh;
-  background-color: #f0f8ff;
   font-family: sans-serif;
+  background-color: #f0f8ff;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #414141;
+  }
 }
 
 #app {
