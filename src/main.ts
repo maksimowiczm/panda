@@ -3,16 +3,30 @@ import './style.css'
 // Get the panda image element from the DOM
 const panda = document.getElementById('panda') as HTMLImageElement;
 
+// Create or get the favicon link element
+const faviconLink = document.createElement('link');
+faviconLink.rel = 'icon';
+faviconLink.type = 'image/svg+xml';
+document.head.appendChild(faviconLink);
+
+// Function to update the favicon
+const updateFavicon = (src: string) => {
+  faviconLink.href = src;
+};
+
 // Set the initial state to neutral
 let interactionTimeout: number;
 panda.src = '/Neutral.svg';
+updateFavicon(panda.src);
 
 const goSad = () => {
   panda.src = '/Sad.svg';
+  updateFavicon(panda.src);
 }
 
 const goAngry = () => {
   panda.src = '/Angry.svg';
+  updateFavicon(panda.src);
   interactionTimeout = setTimeout(goSad, 5000);
 }
 
@@ -23,6 +37,7 @@ interactionTimeout = setTimeout(goAngry, 5000);
 const handleInteraction = () => {
   // Change the panda to happy
   panda.src = '/Happy.svg';
+  updateFavicon(panda.src);
 
   // Clear the previous timeout to prevent the panda from getting angry
   clearTimeout(interactionTimeout);
