@@ -50,16 +50,17 @@ let heartInterval: number;
 let currentPointerPosition: { clientX: number, clientY: number } | null = null;
 
 // Function to create and animate a single heart
-const createHeart = () => {
-  if (!currentPointerPosition) return; // Should not happen if called correctly
+const createHeart = (eventPoint?: { clientX: number, clientY: number }) => {
+  const position = eventPoint || currentPointerPosition;
+  if (!position) return; // Should not happen if called correctly
 
   const heart = document.createElement('span');
   heart.classList.add('heart');
   heart.innerHTML = '❤️';
 
   // Position the heart near the event
-  heart.style.left = `${currentPointerPosition.clientX + (Math.random() - 0.5) * 40}px`;
-  heart.style.top = `${currentPointerPosition.clientY + (Math.random() - 0.5) * 40}px`;
+  heart.style.left = `${position.clientX + (Math.random() - 0.5) * 40}px`;
+  heart.style.top = `${position.clientY + (Math.random() - 0.5) * 40}px`;
 
   document.body.appendChild(heart);
 
@@ -117,11 +118,10 @@ panda.addEventListener('touchcancel', stopCreatingHearts);
 // Add a click listener to create a burst of hearts on single click
 panda.addEventListener('click', (e) => {
   handleInteraction(); // Also count as interaction
-  currentPointerPosition = { clientX: e.clientX, clientY: e.clientY }; // Set position for click
+  const eventPoint = { clientX: e.clientX, clientY: e.clientY }; // Set position for click
   for (let i = 0; i < 3; i++) { // Create 3 hearts on click
-    setTimeout(() => createHeart(), i * 50); // Stagger them slightly
+    setTimeout(() => createHeart(eventPoint), i * 50); // Stagger them slightly
   }
-  currentPointerPosition = null; // Clear after click burst
 });
 
 // Prevent the browser's default drag-and-drop behavior
