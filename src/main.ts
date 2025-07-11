@@ -96,5 +96,14 @@ panda.addEventListener('touchstart', (e) => {
 panda.addEventListener('touchend', stopCreatingHearts);
 panda.addEventListener('touchcancel', stopCreatingHearts);
 
+// Add a click listener to create a burst of hearts on single click
+panda.addEventListener('click', (e) => {
+  handleInteraction(); // Also count as interaction
+  const eventPoint = e;
+  for (let i = 0; i < 3; i++) { // Create 3 hearts on click
+    setTimeout(() => createHeart(eventPoint), i * 50); // Stagger them slightly
+  }
+});
+
 // Prevent the browser's default drag-and-drop behavior
 panda.addEventListener('dragstart', (e) => e.preventDefault());
