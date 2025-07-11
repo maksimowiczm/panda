@@ -47,16 +47,19 @@ const handleInteraction = () => {
 };
 
 let heartInterval: number;
+let currentPointerPosition: { clientX: number, clientY: number } | null = null;
 
 // Function to create and animate a single heart
-const createHeart = (event: { clientX: number, clientY: number }) => {
+const createHeart = () => {
+  if (!currentPointerPosition) return; // Should not happen if called correctly
+
   const heart = document.createElement('span');
   heart.classList.add('heart');
   heart.innerHTML = '❤️';
 
   // Position the heart near the event
-  heart.style.left = `${event.clientX + (Math.random() - 0.5) * 40}px`;
-  heart.style.top = `${event.clientY + (Math.random() - 0.5) * 40}px`;
+  heart.style.left = `${currentPointerPosition.clientX + (Math.random() - 0.5) * 40}px`;
+  heart.style.top = `${currentPointerPosition.clientY + (Math.random() - 0.5) * 40}px`;
 
   document.body.appendChild(heart);
 
@@ -66,17 +69,29 @@ const createHeart = (event: { clientX: number, clientY: number }) => {
   }, 2000);
 };
 
+const updatePointerPosition = (e: MouseEvent | TouchEvent) => {
+  const eventPoint = e instanceof MouseEvent ? e : e.touches[0];
+  currentPointerPosition = { clientX: eventPoint.clientX, clientY: eventPoint.clientY };
+};
+
 const startCreatingHearts = (e: MouseEvent | TouchEvent) => {
   handleInteraction();
-  const eventPoint = e instanceof MouseEvent ? e : e.touches[0];
+  updatePointerPosition(e); // Set initial position
+
+  // Add listeners to update position while dragging
+  document.body.addEventListener('mousemove', updatePointerPosition);
+  document.body.addEventListener('touchmove', updatePointerPosition);
+
   clearInterval(heartInterval); // Stop any previous interval
-  heartInterval = setInterval(() => {
-    createHeart(eventPoint);
-  }, 100);
+  heartInterval = setInterval(createHeart, 100);
 };
 
 const stopCreatingHearts = () => {
   clearInterval(heartInterval);
+  // Remove listeners when dragging stops
+  document.body.removeEventListener('mousemove', updatePointerPosition);
+  document.body.removeEventListener('touchmove', updatePointerPosition);
+  currentPointerPosition = null;
 };
 
 // Add event listeners for general interaction
@@ -87,22 +102,26 @@ panda.addEventListener('touchmove', handleInteraction);
 // Event listeners for creating hearts (which also count as interaction)
 panda.addEventListener('mousedown', startCreatingHearts);
 panda.addEventListener('mouseup', stopCreatingHearts);
-panda.addEventListener('mouseleave', stopCreatingHearts);
+// Listen for mouseup anywhere on the document to stop creating hearts if released outside panda
+document.body.addEventListener('mouseup', stopCreatingHearts);
+panda.addEventListener('mouseleave', stopCreatingHearts); // If mouse leaves panda while down
 
 panda.addEventListener('touchstart', (e) => {
   e.preventDefault();
   startCreatingHearts(e);
 });
 panda.addEventListener('touchend', stopCreatingHearts);
+document.body.addEventListener('touchend', stopCreatingHearts);
 panda.addEventListener('touchcancel', stopCreatingHearts);
 
 // Add a click listener to create a burst of hearts on single click
 panda.addEventListener('click', (e) => {
   handleInteraction(); // Also count as interaction
-  const eventPoint = e;
+  currentPointerPosition = { clientX: e.clientX, clientY: e.clientY }; // Set position for click
   for (let i = 0; i < 3; i++) { // Create 3 hearts on click
-    setTimeout(() => createHeart(eventPoint), i * 50); // Stagger them slightly
+    setTimeout(() => createHeart(), i * 50); // Stagger them slightly
   }
+  currentPointerPosition = null; // Clear after click burst
 });
 
 // Prevent the browser's default drag-and-drop behavior
