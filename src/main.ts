@@ -1,4 +1,8 @@
 import './style.css'
+import neutral from '/Neutral.svg';
+import sad from '/Sad.svg';
+import angry from '/Angry.svg';
+import happy from '/Happy.svg';
 
 // Get the panda image element from the DOM
 const panda = document.getElementById('panda') as HTMLImageElement;
@@ -16,16 +20,16 @@ const updateFavicon = (src: string) => {
 
 // Set the initial state to neutral
 let interactionTimeout: number;
-panda.src = '/Neutral.svg';
+panda.src = neutral;
 updateFavicon(panda.src);
 
 const goSad = () => {
-  panda.src = '/Sad.svg';
+  panda.src = sad;
   updateFavicon(panda.src);
 }
 
 const goAngry = () => {
-  panda.src = '/Angry.svg';
+  panda.src = angry;
   updateFavicon(panda.src);
   interactionTimeout = setTimeout(goSad, 5000);
 }
@@ -36,7 +40,7 @@ interactionTimeout = setTimeout(goAngry, 5000);
 // Function to handle user interaction
 const handleInteraction = () => {
   // Change the panda to happy
-  panda.src = '/Happy.svg';
+  panda.src = happy;
   updateFavicon(panda.src);
 
   // Clear the previous timeout to prevent the panda from getting angry
